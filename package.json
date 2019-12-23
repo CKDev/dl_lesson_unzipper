@@ -1,0 +1,17 @@
+{
+  "name": "unzip_lesson",
+  "version": "1.0.0",
+  "description": "Lambda function to unzip DigitalLearn lessons",
+  "main": "index.js",
+  "dependencies": {
+    "adm-zip": "^0.4.13",
+    "mime-types": "^2.1.25"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "ISC"
+}
