@@ -2,11 +2,18 @@
 var AdmZip = require("adm-zip");
 var mime = require("mime-types");
 var AWS = require("aws-sdk");
+var Rollbar = require("rollbar");
 
 // get reference to S3 client
 var s3 = new AWS.S3();
 
-exports.handler = function(event, context, callback) {
+// configure rollbar
+var rollbar = new Rollbar({
+  accessToken: process.env.ROLLBAR_TOKEN,
+  captureLambdaTimeouts: false
+});
+
+exports.handler = rollbar.lambdaHandler((event, context, callback) => {
   var srcBucket = event.Records[0].s3.bucket.name;
 
   // Object key may have spaces or unicode non-ASCII characters.
@@ -15,14 +22,18 @@ exports.handler = function(event, context, callback) {
   );
   var dstBucket = srcBucket.replace("-zipped", "");
 
+  rollbar.log("Attempting to process lesson: " + srcKey + " from " + srcBucket);
+  console.log("Attempting to process lesson: " + srcKey + " from " + srcBucket);
+
   processLesson(srcBucket, srcKey, dstBucket)
     .then(function() {
       console.log("Lesson successfully unzipped and uploaded.");
     })
     .catch(function(err) {
+      rollbar.error("Error processing lesson: " + srcKey + " - " + err);
       console.error("Could not finish lesson processing: " + err);
     });
-};
+});
 
 async function processLesson(srcBucket, srcKey, dstBucket) {
   try {

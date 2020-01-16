@@ -5,7 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "adm-zip": "^0.4.13",
-    "mime-types": "^2.1.25"
+    "mime-types": "^2.1.25",
+    "rollbar": "^2.14.4"
   },
   "devDependencies": {},
   "repository": {
