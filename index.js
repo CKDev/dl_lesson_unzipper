@@ -10,6 +10,7 @@ var s3 = new AWS.S3();
 // configure rollbar
 var rollbar = new Rollbar({
   accessToken: process.env.ROLLBAR_TOKEN,
+  environment: process.env.ROLLBAR_ENV,
   captureLambdaTimeouts: false
 });
 
