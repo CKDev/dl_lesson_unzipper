@@ -11,7 +11,7 @@ var s3 = new AWS.S3();
 var rollbar = new Rollbar({
   accessToken: process.env.ROLLBAR_TOKEN,
   environment: process.env.ROLLBAR_ENV,
-  captureLambdaTimeouts: false
+  captureLambdaTimeouts: false,
 });
 
 exports.handler = rollbar.lambdaHandler((event, context, callback) => {
@@ -27,10 +27,10 @@ exports.handler = rollbar.lambdaHandler((event, context, callback) => {
   console.log("Attempting to process lesson: " + srcKey + " from " + srcBucket);
 
   processLesson(srcBucket, srcKey, dstBucket)
-    .then(function() {
+    .then(function () {
       console.log("Lesson successfully unzipped and uploaded.");
     })
-    .catch(function(err) {
+    .catch(function (err) {
       rollbar.error("Error processing lesson: " + srcKey + " - " + err);
       console.error("Could not finish lesson processing: " + err);
     });
@@ -70,7 +70,7 @@ async function processLesson(srcBucket, srcKey, dstBucket) {
 async function getZippedLesson(srcBucket, srcKey) {
   const params = {
     Bucket: srcBucket,
-    Key: srcKey
+    Key: srcKey,
   };
 
   return await s3.getObject(params).promise();
@@ -84,7 +84,7 @@ async function unzip(zippedLesson) {
 }
 
 async function fixLessonJs(files) {
-  return files.map(file => {
+  return files.map((file) => {
     var contents;
 
     if (file.entryName.match("user.js")) {
@@ -103,7 +103,7 @@ async function fixLessonJs(files) {
 
     return {
       name: file.entryName,
-      contents: contents
+      contents: contents,
     };
   });
 }
@@ -115,8 +115,8 @@ async function uploadLesson(lesson, bucket, srcKey) {
     Bucket: bucket,
     Key: key,
     Body: lesson.contents,
-    ACL: "public-read",
-    ContentDisposition: "inline"
+    ACL: "private",
+    ContentDisposition: "inline",
   };
 
   var splitKey = key.split(".");
