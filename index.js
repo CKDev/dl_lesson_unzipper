@@ -17,14 +17,6 @@ var rollbar = new Rollbar({
 exports.handler = rollbar.lambdaHandler((event, context, callback) => {
   var srcBucket = event.Records[0].s3.bucket.name;
 
-  var environment = getEnvironmentFromBucketName(srcBucket);
-
-  Rollbar.global({
-    payload: {
-      environment: environment,
-    },
-  });
-
   // Object key may have spaces or unicode non-ASCII characters.
   var srcKey = decodeURIComponent(
     event.Records[0].s3.object.key.replace(/\+/g, " ")
@@ -133,12 +125,4 @@ async function uploadLesson(lesson, bucket, srcKey) {
   properties.ContentType = mime.lookup(extension);
 
   return await s3.putObject(properties).promise();
-}
-
-function getEnvironmentFromBucketName(bucketName) {
-  if (bucketName.includes("stageapp") || bucketName.includes("staging")) {
-    return "staging";
-  } else {
-    return "production";
-  }
 }
