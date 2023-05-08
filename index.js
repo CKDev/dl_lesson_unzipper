@@ -122,7 +122,14 @@ async function uploadLesson(lesson, bucket, srcKey) {
   var splitKey = key.split(".");
   var extension = splitKey[splitKey.length - 1];
 
-  properties.ContentType = mime.lookup(extension);
+  var contentType = mime.lookup(extension);
 
-  return await s3.putObject(properties).promise();
+  if (typeof contentType === "string" || contentType instanceof String) {
+    properties.ContentType = contentType;
+    return await s3.putObject(properties).promise();
+  } else {
+    rollbar.log("Invalid content type for file: " + key);
+    console.log("Invalid content type for file: " + key);
+    return;
+  }
 }
